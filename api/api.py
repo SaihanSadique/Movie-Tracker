@@ -1,10 +1,15 @@
-from fastapi import FastAPI
+"""Module providing a function printing python version."""
 
+from fastapi import FastAPI
 from api.handlers import demo
 
 
 def create_app():
-    app = FastAPI()
+    """
+    Creates and configures a FastAPI application instance.
+    Returns:
+        FastAPI: The configured FastAPI application object.
+    """
+    app = FastAPI(docs_url="/")
     app.include_router(demo.router)
     return app
-     
