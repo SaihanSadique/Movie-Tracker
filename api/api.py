@@ -1,8 +1,7 @@
-"""Module providing a function printing python version."""
+""" This module contains the FastAPI application instance and its configuration. """
 
 from fastapi import FastAPI
 from api.handlers import demo
-
 
 def create_app():
     """
