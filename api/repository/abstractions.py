@@ -22,7 +22,7 @@ class MovieRepository(abc.ABC):
 
     def create(self, movie: Movie) -> bool:
         """
-        Creates a movie and returns True if successful.
+        Inserts the movie into the database.
         """
         raise NotImplementedError
 
