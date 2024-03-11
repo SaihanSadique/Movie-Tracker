@@ -25,6 +25,7 @@ def test_create():
 @pytest.mark.parametrize(
     "movies_seed,movie_id,expected_result",
     [pytest.param([], "my-id", None, id="empty")],
+    [pytest.param([], "my-id", None, id="empty")],
 )
 def test_get_by_id(movies_seed, movie_id, expected_result):
     """Test the retrieval of a movie by its id."""
@@ -37,14 +38,11 @@ def test_get_by_id(movies_seed, movie_id, expected_result):
 
 def test_get_by_title():
     """Test the retrieval of a movie by its title."""
-    pass
 
 
 def test_delete():
     """Test the deletion of a movie from the repository."""
-    pass
 
 
 def test_update():
     """Getter for the movie release year"""
-    pass
