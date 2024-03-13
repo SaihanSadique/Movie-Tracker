@@ -19,7 +19,7 @@ class Movie:
         title: str,
         description: str,
         release_year: int,
-        watched: bool
+        watched: False,
     ):
         if movie_id is None:
             raise ValueError("Movie id is required")
@@ -53,3 +53,14 @@ class Movie:
     def watched(self) -> bool:
         """Getter for the movie watched status"""
         return self._watched
+
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Movie):
+            return False
+        return (
+            self.id == o.id
+            and self.title == o.title
+            and self.description == o.description
+            and self.release_year == o.release_year
+            and self.watched == o.watched
+        )

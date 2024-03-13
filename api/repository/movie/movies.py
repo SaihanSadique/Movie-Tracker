@@ -38,4 +38,4 @@ class MemoryMovieRepository(MovieRepository):
             if key == "id":
                 raise RepositoryException("Cannot update movie id")
             if hasattr(movie, key):
-                setattr(movie, key, value)  # Update the movie entity field
+                setattr(movie, f"_{key}", value)  # Update the movie entity field
