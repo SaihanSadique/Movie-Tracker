@@ -20,33 +20,33 @@ class MovieRepository(abc.ABC):
 
     """
 
-    def create(self, movie: Movie) -> bool:
+    async def create(self, movie: Movie) -> bool:
         """
         Inserts the movie into the database.
         """
         raise NotImplementedError
 
-    def get_by_id(self, movie_id: str) -> typing.Optional[Movie]:
+    async def get_by_id(self, movie_id: str) -> typing.Optional[Movie]:
         """
         Returns a movie by its id and if not found, returns None.
         Raises RepositoryException of Failure.
         """
         raise NotImplementedError
 
-    def get_by_title(self, title: str) -> typing.List[Movie]:
+    async def get_by_title(self, title: str) -> typing.List[Movie]:
         """
         Returns a list of movies which share the same title and if not found, returns None.
         """
         raise NotImplementedError
 
-    def delete(self, movie_id: str):
+    async def delete(self, movie_id: str):
         """
         Deletes a movie by its id.
         Raises RepositoryException of Failure.
         """
         raise NotImplementedError
 
-    def update(self, movie_id: str, update_parameteres: dict):
+    async def update(self, movie_id: str, update_parameteres: dict):
         """
         Updates a movie.
         """

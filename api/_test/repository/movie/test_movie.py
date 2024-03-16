@@ -3,13 +3,14 @@ This file contains the tests for the movie repository.
 """
 
 import pytest
+
 from api.entities.movies import Movie
 from api.repository.movie.abstractions import RepositoryException
-
 from api.repository.movie.movies import MemoryMovieRepository
 
 
-def test_create():
+@pytest.mark.asyncio
+async def test_create():
     """Test the creation of a movie in the repository."""
     repo = MemoryMovieRepository()
     movie = Movie(
@@ -19,10 +20,11 @@ def test_create():
         release_year=2021,
         watched=False,
     )
-    repo.create(movie)
-    assert repo.get_by_id("test_id") is movie
+    await repo.create(movie)
+    assert await repo.get_by_id("test_id") is movie
 
 
+@pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "movies_seed,movie_id,expected_result",
     [
@@ -49,15 +51,16 @@ def test_create():
         ),
     ],
 )
-def test_get_by_id(movies_seed, movie_id, expected_result):
+async def test_get_by_id(movies_seed, movie_id, expected_result):
     """Test the retrieval of a movie by its id."""
     repo = MemoryMovieRepository()
     for movie in movies_seed:
-        repo.create(movie)
+        await repo.create(movie)
     movie = repo.get_by_id(movie_id=movie_id)
-    assert movie == expected_result
+    assert await movie == expected_result
 
 
+@pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "movies_seed,movie_title,expected_results",
     [
@@ -78,18 +81,19 @@ def test_get_by_id(movies_seed, movie_id, expected_result):
         ),
     ],
 )
-def test_get_by_title(movies_seed, movie_title, expected_results):
+async def test_get_by_title(movies_seed, movie_title, expected_results):
     """Test the retrieval of a movie by its title."""
     repo = MemoryMovieRepository()
     for movie in movies_seed:
-        repo.create(movie)
-    assert repo.get_by_title(movie_title) == expected_results
+        await repo.create(movie)
+    assert await repo.get_by_title(movie_title) == expected_results
 
 
-def test_delete():
+@pytest.mark.asyncio()
+async def test_delete():
     """Test the deletion of a movie from the repository."""
     repo = MemoryMovieRepository()
-    repo.create(
+    await repo.create(
         Movie(
             movie_id="test_id",
             title="test_title",
@@ -98,14 +102,15 @@ def test_delete():
             watched=False,
         )
     )
-    repo.delete("test_id")
-    assert repo.get_by_id("test_id") is None
+    await repo.delete("test_id")
+    assert await repo.get_by_id("test_id") is None
 
 
-def test_update_success():
+@pytest.mark.asyncio()
+async def test_update_success():
     """Test the successful update of a movie in the repository."""
     repo = MemoryMovieRepository()
-    repo.create(
+    await repo.create(
         Movie(
             movie_id="my-id-2",
             title="test_title",
@@ -114,7 +119,7 @@ def test_update_success():
             watched=False,
         )
     )
-    repo.update(
+    await repo.update(
         movie_id="my-id-2",
         update_parameteres={
             "title": "my-updated-movie",
@@ -124,7 +129,7 @@ def test_update_success():
         },
     )
     movie = repo.get_by_id("my-id-2")
-    assert movie == Movie(
+    assert await movie == Movie(
         movie_id="my-id-2",
         title="my-updated-movie",
         description="my updated description",
@@ -133,10 +138,11 @@ def test_update_success():
     )
 
 
-def test_update_fail():
+@pytest.mark.asyncio()
+async def test_update_fail():
     """Test the failed update of a movie in the repository."""
     repo = MemoryMovieRepository()
-    repo.create(
+    await repo.create(
         Movie(
             movie_id="test_id",
             title="test_title",
@@ -146,4 +152,4 @@ def test_update_fail():
         )
     )
     with pytest.raises(RepositoryException):
-        repo.update(movie_id="my-id-2", update_parameteres={"id": "fail"})
+        await repo.update(movie_id="my-id-2", update_parameteres={"id": "fail"})
