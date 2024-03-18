@@ -9,8 +9,9 @@ from api.repository.movie.mongo import MongoMovieRepository
 @pytest.mark.asyncio
 async def test_create():
     repo = MongoMovieRepository(
-        connection_string="mongodb://movietracker_dbAdmin:CDE7Yn2C.q!a7-x@localhost:27017", database="movie_tracker_db"
-        #mongodb://myUsername:myPassword@localhost:27017/myDatabase?authSource=admin
+        connection_string="mongodb://movietracker_dbAdmin:CDE7Yn2C.q!a7-x@localhost:27017",
+        database="movie_tracker_db",
+        # mongodb://myUsername:myPassword@localhost:27017/myDatabase?authSource=admin
         # connection_string="mongodb://localhost:27017", database="movie_tracker_db"
     )
     await repo.create(
