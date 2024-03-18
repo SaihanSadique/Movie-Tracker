@@ -13,7 +13,11 @@ from api.repository.movie.abstractions import MovieRepository, RepositoryExcepti
 class MongoMovieRepository(MovieRepository):
     """MongoMovieRepository implements the repository pattern for our movie enitity using MongoDB"""
 
-    def __init__(self, connection_string: str = "mongodb://localhost:27017") -> None:
+    def __init__(
+        self,
+        connection_string: str = "mongodb://localhost:27017",
+        database: str = "movie_tracker_db",
+    ):
         self._client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
         self._database = self._client["movie_tracker_db"]
         # movies collection which holds the movie documents
