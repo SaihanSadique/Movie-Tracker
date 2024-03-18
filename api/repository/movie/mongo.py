@@ -15,7 +15,8 @@ class MongoMovieRepository(MovieRepository):
 
     def __init__(
         self,
-        connection_string: str = "mongodb://localhost:27017", database: str = "movie_track_db",
+        connection_string: str = "mongodb://localhost:27017",
+        database: str = "movie_track_db",
     ):
         self._client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
         self._database = self._client[database]
@@ -23,14 +24,18 @@ class MongoMovieRepository(MovieRepository):
         self._movies = self._database["movies"]
 
     async def create(self, movie: Movie):
-        await self._movies.insert_one(
+        await self._movies.update_one(
             {
+                "id": movie.id
+            },
+            {"$set":{
                 "id": movie.id,
                 "title": movie.title,
                 "description": movie.description,
                 "release_year": movie.release_year,
                 "watched": movie.watched,
-            }
+            }},
+            upsert=True
         )
 
     async def get_by_id(self, movie_id: str) -> typing.Optional[Movie]:
