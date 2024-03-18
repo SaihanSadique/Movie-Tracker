@@ -15,11 +15,10 @@ class MongoMovieRepository(MovieRepository):
 
     def __init__(
         self,
-        connection_string: str = "mongodb://localhost:27017",
-        database: str = "movie_tracker_db",
+        connection_string: str = "mongodb://localhost:27017", database: str = "movie_track_db",
     ):
         self._client = motor.motor_asyncio.AsyncIOMotorClient(connection_string)
-        self._database = self._client["movie_tracker_db"]
+        self._database = self._client[database]
         # movies collection which holds the movie documents
         self._movies = self._database["movies"]
 

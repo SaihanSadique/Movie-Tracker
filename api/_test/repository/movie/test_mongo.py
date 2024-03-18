@@ -8,9 +8,12 @@ from api.repository.movie.mongo import MongoMovieRepository
 
 @pytest.mark.asyncio
 async def test_create():
+    """
+    Test creating a movie in the repository.
+    """
     repo = MongoMovieRepository(
         connection_string="mongodb://movietracker_dbAdmin:CDE7Yn2C.q!a7-x@localhost:27017",
-        database="movie_tracker_db",
+        database="movie_track_db",
         # mongodb://myUsername:myPassword@localhost:27017/myDatabase?authSource=admin
         # connection_string="mongodb://localhost:27017", database="movie_tracker_db"
     )
@@ -35,19 +38,27 @@ async def test_create():
 
 @pytest.mark.asyncio
 async def test_get_by_id():
-    pass
+    """
+    Test getting a movie by id from the repository.
+    """
 
 
 @pytest.mark.asyncio
 async def test_get_by_title():
-    pass
+    """
+    Test getting movies by title from the repository.
+    """
 
 
 @pytest.mark.asyncio
 async def test_update():
-    pass
+    """
+    Test updating a movie in the repository.
+    """
 
 
 @pytest.mark.asyncio
 async def test_delete():
-    pass
+    """
+    Test deleting a movie from the repository.
+    """
