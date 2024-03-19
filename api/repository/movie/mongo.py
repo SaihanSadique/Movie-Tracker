@@ -38,15 +38,26 @@ class MongoMovieRepository(MovieRepository):
             upsert=True
         )
 
+    # async def get_by_id(self, movie_id: str) -> typing.Optional[Movie]:
+    #     document = await self._movies.find_one({"id": movie_id})
+    #     if document:
+    #         return Movie(
+    #             movie_id=document.get["id"],
+    #             title=document.get["title"],
+    #             description=document.get["description"],
+    #             release_year=document.get["release_year"],
+    #             watched=document.get["watched"],
+    #         )
+    #     return None
     async def get_by_id(self, movie_id: str) -> typing.Optional[Movie]:
         document = await self._movies.find_one({"id": movie_id})
         if document:
             return Movie(
-                movie_id=document.get["id"],
-                title=document.get["title"],
-                description=document.get["description"],
-                release_year=document.get["release_year"],
-                watched=document.get["watched"],
+                movie_id=document["id"],
+                title=document["title"],
+                description=document["description"],
+                release_year=document["release_year"],
+                watched=document["watched"],
             )
         return None
 
