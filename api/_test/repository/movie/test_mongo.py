@@ -1,10 +1,12 @@
 """ Test cases for the movie repository using MongoDB. """
 
+# pylint: disable=unused-import , redefined-outer-name
 import pytest
 
 
 from api._test.repository.fixture import mongo_movie_repo_fixture
 from api.entities.movies import Movie
+from api.repository.movie.abstractions import RepositoryException
 
 
 @pytest.mark.asyncio
@@ -36,6 +38,7 @@ async def test_create(mongo_movie_repo_fixture):
 @pytest.mark.parametrize(
     "initial_movies, movie_id, expected_result",
     [
+        pytest.param([], "any", None, id="empty-case"),
         pytest.param(
             [
                 Movie(
@@ -76,6 +79,7 @@ async def test_get_by_id(
 
     movie: Movie = await mongo_movie_repo_fixture.get_by_id(movie_id)
     assert movie == expected_result
+
 
 @pytest.mark.parametrize(
     "initial_movies,searched_title,expected_movies",
@@ -130,11 +134,13 @@ async def test_get_by_id(
 async def test_get_by_title(
     mongo_movie_repo_fixture, initial_movies, searched_title, expected_movies
 ):
-    """ Test getting movies by title from the repository."""
+    """Test getting movies by title from the repository."""
     for movie in initial_movies:
         await mongo_movie_repo_fixture.create(movie)
     movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
     assert movies == expected_movies
+
+
 # @pytest.mark.parametrize(
 #     "initial_movies, searched_title, expected_movies",
 #     [
@@ -188,28 +194,76 @@ async def test_get_by_title(
 #         await mongo_movie_repo_fixture.create(movie)
 #     movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
 #     assert movies == expected_movies
-    # movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
+# movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
 
-    # assert len(movies) == len(expected_movies)
-    # for movie, expected_movie in zip(movies, expected_movies):
-    #     assert movie.movie_id == expected_movie.movie_id
-    #     assert movie.title == expected_movie.title
-    #     assert movie.description == expected_movie.description
-    #     assert movie.release_year == expected_movie.release_year
-    #     assert movie.watched == expected_movie.watched
+# assert len(movies) == len(expected_movies)
+# for movie, expected_movie in zip(movies, expected_movies):
+#     assert movie.movie_id == expected_movie.movie_id
+#     assert movie.title == expected_movie.title
+#     assert movie.description == expected_movie.description
+#     assert movie.release_year == expected_movie.release_year
+#     assert movie.watched == expected_movie.watched
 
 
 @pytest.mark.asyncio
-async def test_update():
+async def test_update(mongo_movie_repo_fixture):
     """
     Test updating a movie in the repository.
     """
-    pass
+    initial_movie = Movie(
+        movie_id="first",
+        title="My Movie",
+        description="My Movie Description",
+        release_year=2022,
+        watched=True,
+    )
+    await mongo_movie_repo_fixture.create(initial_movie)
+    await mongo_movie_repo_fixture.update(
+        movie_id="first", update_parameteres={"title": "My MOvie"}
+    )
+    updated_movie = await mongo_movie_repo_fixture.get_by_id("first")
+    assert updated_movie == Movie(
+        movie_id="first",
+        title="My MOvie",
+        description="My Movie Description",
+        release_year=2022,
+        watched=True,
+    )
+    await mongo_movie_repo_fixture.delete("first")
 
 
 @pytest.mark.asyncio
-async def test_delete():
+async def test_update_fail(mongo_movie_repo_fixture):
+    """
+    Testing update function when given faulty parameter
+    """
+    with pytest.raises(RepositoryException):
+        initial_movie = Movie(
+            movie_id="first",
+            title="My Movie",
+            description="My Movie Description",
+            release_year=2022,
+            watched=True,
+        )
+        await mongo_movie_repo_fixture.create(initial_movie)
+        await mongo_movie_repo_fixture.update(
+            movie_id="first", update_parameteres={"id": "second"}
+        )
+        await mongo_movie_repo_fixture.get_by_id("second")
+
+
+@pytest.mark.asyncio
+async def test_delete(mongo_movie_repo_fixture):
     """
     Test deleting a movie from the repository.
     """
-    pass
+    initial_movie = Movie(
+        movie_id="first",
+        title="My Movie",
+        description="My Movie Description for deletion alright!!",
+        release_year=2022,
+        watched=True,
+    )
+    await mongo_movie_repo_fixture.create(initial_movie)
+    await mongo_movie_repo_fixture.delete("first")
+    assert await mongo_movie_repo_fixture.get_by_id(movie_id="first") is None

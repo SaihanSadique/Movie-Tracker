@@ -9,7 +9,6 @@ from api.repository.movie.abstractions import RepositoryException
 from api.repository.movie.memory import MemoryMovieRepository
 
 
-
 @pytest.mark.asyncio
 async def test_create():
     """Test the creation of a movie in the repository."""
@@ -59,6 +58,7 @@ async def test_get_by_id(movies_seed, movie_id, expected_result):
         await repo.create(movie)
     movie = repo.get_by_id(movie_id=movie_id)
     assert await movie == expected_result
+
 
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
@@ -118,15 +118,15 @@ async def test_get_by_id(movies_seed, movie_id, expected_result):
     ],
 )
 @pytest.mark.asyncio
-async def test_get_by_title(
-    movies_seed, movie_title, expected_results
-):
+async def test_get_by_title(movies_seed, movie_title, expected_results):
     """Test the retrieval of a movie by its title."""
     repo = MemoryMovieRepository()
     for movie in movies_seed:
         await repo.create(movie)
     result = await repo.get_by_title(title=movie_title)
     assert result == expected_results
+
+
 # @pytest.mark.asyncio()
 # @pytest.mark.parametrize(
 #     "movies_seed,movie_title,expected_results",

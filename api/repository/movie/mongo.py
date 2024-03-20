@@ -49,6 +49,7 @@ class MongoMovieRepository(MovieRepository):
     #             watched=document.get["watched"],
     #         )
     #     return None
+
     async def get_by_id(self, movie_id: str) -> typing.Optional[Movie]:
         document = await self._movies.find_one({"id": movie_id})
         if document:
@@ -78,14 +79,26 @@ class MongoMovieRepository(MovieRepository):
             )
         return return_value
 
+    # async def update(self, movie_id: str, update_parameteres: dict):
+    #     if id in update_parameteres.keys():
+    #         raise RepositoryException("Cannot update movie id")
+    #     result = await self._movies.update_one(
+    #         {"id": movie_id}, {"$set": update_parameteres}
+    #     )
+    #     if result.modified_count == 0:
+    #         raise RepositoryException(f"Movie {movie_id} not found")
+
     async def update(self, movie_id: str, update_parameteres: dict):
-        if id in update_parameteres.keys():
-            raise RepositoryException("Cannot update movie id")
+        if "id" in update_parameteres.keys():
+            raise RepositoryException("can't update movie id.")
         result = await self._movies.update_one(
             {"id": movie_id}, {"$set": update_parameteres}
         )
         if result.modified_count == 0:
-            raise RepositoryException(f"Movie {movie_id} not found")
+            raise RepositoryException(f"movie: {movie_id} not updated")
+
+    # async def delete(self, movie_id: str):
+    #   await self._movies.delete_one({"id": movie_id})
 
     async def delete(self, movie_id: str):
         await self._movies.delete_one({"id": movie_id})
