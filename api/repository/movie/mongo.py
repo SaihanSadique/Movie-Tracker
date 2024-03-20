@@ -61,26 +61,11 @@ class MongoMovieRepository(MovieRepository):
             )
         return None
 
-    # async def get_by_title(self, title: str) -> typing.List[Movie]:
-    #     return_value: typing.List[Movie] = []
-    #     document_cursor = self._movies.find({"title": title})
-    #     # iterate through documents
-    #     async for document in document_cursor:
-    #         return_value.append(
-    #             Movie(
-    #                 movie_id=document.get["id"],
-    #                 title=document.get["title"],
-    #                 description=document.get["description"],
-    #                 release_year=document.get["release_year"],
-    #                 watched=document.get["watched"],
-    #             )
-    #         )
-    
     async def get_by_title(self, title: str) -> typing.List[Movie]:
         return_value: typing.List[Movie] = []
         document_cursor = self._movies.find({"title": title})
 
-    # iterate through documents
+        # iterate through documents
         async for document in document_cursor:
             return_value.append(
                 Movie(

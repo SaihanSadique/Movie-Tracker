@@ -9,6 +9,7 @@ from api.repository.movie.abstractions import RepositoryException
 from api.repository.movie.memory import MemoryMovieRepository
 
 
+
 @pytest.mark.asyncio
 async def test_create():
     """Test the creation of a movie in the repository."""
@@ -59,34 +60,122 @@ async def test_get_by_id(movies_seed, movie_id, expected_result):
     movie = repo.get_by_id(movie_id=movie_id)
     assert await movie == expected_result
 
-
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
     "movies_seed,movie_title,expected_results",
     [
-        pytest.param([], "some-title", None, id="empty-results"),
+        pytest.param([], "some-title", [], id="empty-results"),
         pytest.param(
             [
                 Movie(
                     movie_id="my-id",
-                    title="test_title",
-                    description="test_description",
-                    release_year=2021,
-                    watched=False,
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched=True,
                 )
             ],
             "some-title",
-            None,
+            [],
             id="empty-results-2",
+        ),
+        pytest.param(
+            [
+                Movie(
+                    movie_id="my-id",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched=True,
+                ),
+                Movie(
+                    movie_id="my-id-2",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched=True,
+                ),
+            ],
+            "My Movie",
+            [
+                Movie(
+                    movie_id="my-id",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched=True,
+                ),
+                Movie(
+                    movie_id="my-id-2",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched=True,
+                ),
+            ],
+            id="results",
         ),
     ],
 )
-async def test_get_by_title(movies_seed, movie_title, expected_results):
+@pytest.mark.asyncio
+async def test_get_by_title(
+    movies_seed, movie_title, expected_results
+):
     """Test the retrieval of a movie by its title."""
     repo = MemoryMovieRepository()
     for movie in movies_seed:
         await repo.create(movie)
-    assert await repo.get_by_title(movie_title) == expected_results
+    result = await repo.get_by_title(title=movie_title)
+    assert result == expected_results
+# @pytest.mark.asyncio()
+# @pytest.mark.parametrize(
+#     "movies_seed,movie_title,expected_results",
+#     [
+#         pytest.param([], "some-title", None, id="empty-results"),
+#         pytest.param(
+#             [
+#                 Movie(
+#                     movie_id="my-id",
+#                     title="test_title",
+#                     description="test_description",
+#                     release_year=2021,
+#                     watched=False,
+#                 )
+#             ],
+#             "some-title",
+#             None,
+#             id="empty-results-2",
+#         ),
+#         pytest.param(
+#             [
+#                 Movie(
+#                     movie_id="my-id",
+#                     title="My Movie",
+#                     description="test_description",
+#                     release_year=2021,
+#                     watched=False,
+#                 )
+#             ],
+#             "My Movie",
+#             [
+#                 Movie(
+#                     movie_id="my-id",
+#                     title="My Movie",
+#                     description="test_description",
+#                     release_year=2021,
+#                     watched=False,
+#                 )
+#             ],
+#             id="results",
+#         ),
+#     ],
+# )
+# async def test_get_by_title(movies_seed, movie_title, expected_results):
+#     """Test the retrieval of a movie by its title."""
+#     repo = MemoryMovieRepository()
+#     for movie in movies_seed:
+#         await repo.create(movie)
+#     assert await repo.get_by_title(movie_title) == expected_results
 
 
 @pytest.mark.asyncio()

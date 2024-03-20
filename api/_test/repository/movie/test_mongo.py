@@ -77,49 +77,48 @@ async def test_get_by_id(
     movie: Movie = await mongo_movie_repo_fixture.get_by_id(movie_id)
     assert movie == expected_result
 
-
 @pytest.mark.parametrize(
-    "initial_movies, searched_title, expected_movies",
+    "initial_movies,searched_title,expected_movies",
     [
         pytest.param([], "random title", [], id="empty-case"),
         pytest.param(
             [
                 Movie(
                     movie_id="first",
-                    title="MY MOvie",
-                    description="description of movie",
-                    release_year="2015",
+                    title="My Movie",
+                    description="My Movie Description",
+                    release_year=2022,
                     watched=True,
                 ),
                 Movie(
                     movie_id="second",
-                    title="MY second MOvie",
-                    description="second description of movie",
-                    release_year="2019",
-                    watched=True,
+                    title="My Second Movie",
+                    description="My Second Movie Description",
+                    release_year=2023,
+                    watched=False,
                 ),
                 Movie(
                     movie_id="first_remake",
-                    title="MY MOvie",
-                    description="description of remaken movie",
-                    release_year="2025",
+                    title="My Movie",
+                    description="My Movie Description remake of the first movie from 2022",
+                    release_year=2025,
                     watched=True,
                 ),
             ],
-            "MY MOvie",
+            "My Movie",
             [
                 Movie(
                     movie_id="first",
-                    title="MY MOvie",
-                    description="description of movie",
-                    release_year="2015",
+                    title="My Movie",
+                    description="My Movie Description",
+                    release_year=2022,
                     watched=True,
                 ),
                 Movie(
                     movie_id="first_remake",
-                    title="MY MOvie remake",
-                    description="description of remaken movie",
-                    release_year="2025",
+                    title="My Movie",
+                    description="My Movie Description remake of the first movie from 2022",
+                    release_year=2025,
                     watched=True,
                 ),
             ],
@@ -131,13 +130,73 @@ async def test_get_by_id(
 async def test_get_by_title(
     mongo_movie_repo_fixture, initial_movies, searched_title, expected_movies
 ):
-    """
-    Test getting movies by title from the repository.
-    """
+    """ Test getting movies by title from the repository."""
     for movie in initial_movies:
         await mongo_movie_repo_fixture.create(movie)
-    movie = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
-    assert movie == expected_movies
+    movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
+    assert movies == expected_movies
+# @pytest.mark.parametrize(
+#     "initial_movies, searched_title, expected_movies",
+#     [
+#         pytest.param([], "random title", [], id="empty-case"),
+#         pytest.param(
+#             [
+#                 Movie(
+#                     movie_id="first",
+#                     title="My Movie",
+#                     description="My movie description",
+#                     release_year="2022",
+#                     watched=True,
+#                 ),
+#                 Movie(
+#                     movie_id="first_remake",
+#                     title="My Movie",
+#                     description="description of remaken movie",
+#                     release_year="2025",
+#                     watched=True,
+#                 ),
+#             ],
+#             "My Movie",
+#             [
+#                 Movie(
+#                     movie_id="first",
+#                     title="My Movie",
+#                     description="description of movie",
+#                     release_year="2015",
+#                     watched=True,
+#                 ),
+#                 Movie(
+#                     movie_id="first_remake",
+#                     title="My Movie",
+#                     description="description of remaken movie",
+#                     release_year="2025",
+#                     watched=True,
+#                 ),
+#             ],
+#             id="found-movies",
+#         ),
+#     ],
+# )
+# @pytest.mark.asyncio
+# async def test_get_by_title(
+#     mongo_movie_repo_fixture, initial_movies, searched_title, expected_movies
+# ):
+#     """
+#     Test getting movies by title from the repository.
+#     """
+#     for movie in initial_movies:
+#         await mongo_movie_repo_fixture.create(movie)
+#     movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
+#     assert movies == expected_movies
+    # movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
+
+    # assert len(movies) == len(expected_movies)
+    # for movie, expected_movie in zip(movies, expected_movies):
+    #     assert movie.movie_id == expected_movie.movie_id
+    #     assert movie.title == expected_movie.title
+    #     assert movie.description == expected_movie.description
+    #     assert movie.release_year == expected_movie.release_year
+    #     assert movie.watched == expected_movie.watched
 
 
 @pytest.mark.asyncio
