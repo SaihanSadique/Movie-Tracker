@@ -1,5 +1,7 @@
 """This module contains the DTOs for the movie endpoints."""
 
+# pylint: disable=no-self-argument
+
 from pydantic import BaseModel, validator
 
 
