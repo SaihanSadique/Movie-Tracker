@@ -10,4 +10,15 @@ class MovieCreatedResponse(BaseModel):
     Movie created response
     """
 
-    movie_id: str
+    id: str
+
+
+class MovieResponse(MovieCreatedResponse):
+    """
+    Movie response
+    """
+
+    title: str
+    description: str
+    release_year: int
+    watched: bool
