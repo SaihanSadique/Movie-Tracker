@@ -73,13 +73,21 @@ async def get_movie_by_id(
 
 
 router.get("/", response_model=typing.List[MovieResponse])
-
-
 async def get_movies_by_title(
     title: str = Query(
         ..., title="Title", description="Title of the movie to search for", min_length=3
-    )
+    ),repo: MovieRepository = Depends(movie_repository)
 ):
     """Returns a list of movies that match the title provided.
         If no movies are found, an empty list is returned."""
-    return []
+    movies = await repo.get_by_title(title)
+    movies_return_value = []
+    for movie in movies:
+        movies_return_value.append(MovieResponse(
+        id=movie.id,
+        title=movie.title,
+        description=movie.description,
+        release_year=movie.release_year,
+        watched=movie.watched,
+    ))
+    return movies_return_value
