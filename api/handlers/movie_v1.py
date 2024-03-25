@@ -11,8 +11,9 @@ from api.dto.movie import CreateMovieBody
 from api.entities.movies import Movie
 from api.repository.movie.abstractions import MovieRepository
 from api.repository.movie.mongo import MongoMovieRepository
-from api.responses.detail import DetailResponse
-from api.responses.movie import MovieCreatedResponse, MovieResponse
+from api.dto.detail import DetailResponse
+from api.dto.movie import MovieResponse
+from api.dto.movie import MovieCreatedResponse
 from api.settings import Settings, settings_instance
 
 router = APIRouter(prefix="/api/v1/movies", tags=["movies"])
@@ -72,22 +73,32 @@ async def get_movie_by_id(
     )
 
 
-router.get("/", response_model=typing.List[MovieResponse])
+@router.get("/", response_model=typing.List[MovieResponse])
+
+
 async def get_movies_by_title(
     title: str = Query(
         ..., title="Title", description="Title of the movie to search for", min_length=3
-    ),repo: MovieRepository = Depends(movie_repository)
+    ),
+    repo: MovieRepository = Depends(movie_repository),
 ):
     """Returns a list of movies that match the title provided.
-        If no movies are found, an empty list is returned."""
+    If no movies are found, an empty list is returned."""
     movies = await repo.get_by_title(title)
     movies_return_value = []
     for movie in movies:
-        movies_return_value.append(MovieResponse(
-        id=movie.id,
-        title=movie.title,
-        description=movie.description,
-        release_year=movie.release_year,
-        watched=movie.watched,
-    ))
+        movies_return_value.append(
+            MovieResponse(
+                id=movie.id,
+                title=movie.title,
+                description=movie.description,
+                release_year=movie.release_year,
+                watched=movie.watched,
+            )
+        )
     return movies_return_value
+
+@router.patch("/{movie_id}", response_model=MovieResponse)
+async def patch_movie():
+    """ Updates a movie"""
+    pass

@@ -4,6 +4,7 @@
 
 from pydantic import BaseModel, validator
 
+
 class CreateMovieBody(BaseModel):
     """DTO for creating a movie."""
 
@@ -33,13 +34,16 @@ class CreateMovieBody(BaseModel):
     #         raise ValueError("Release year must be greater than 1900")
     #     return v
 
+
 class MovieCreatedResponse(BaseModel):
     """DTO for the response when a movie is created."""
+
     id: str
 
 
 class MovieResponse(MovieCreatedResponse):
     """DTO for the response when a movie is retrieved."""
+
     title: str
     description: str
     release_year: int
