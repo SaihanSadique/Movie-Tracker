@@ -2,21 +2,27 @@
 This file contains the FastAPI router for the movie API. version 1.
 """
 
-from functools import lru_cache
 import typing
 import uuid
-from fastapi import APIRouter, Body, Depends, Query
+from functools import lru_cache
 
-from api.dto.movie import CreateMovieBody
-from api.entities.movies import Movie
-from api.repository.movie.abstractions import MovieRepository
-from api.repository.movie.mongo import MongoMovieRepository
+from fastapi import APIRouter, Body, Depends, Path, Query
+from starlette.responses import Response
+
 from api.dto.detail import DetailResponse
-from api.dto.movie import MovieResponse
-from api.dto.movie import MovieCreatedResponse
+from api.dto.movie import (
+    CreateMovieBody,
+    MovieCreatedResponse,
+    MovieResponse,
+    MovieUpdateBody,
+)
+from api.entities.movies import Movie
+from api.repository.movie.abstractions import MovieRepository, RepositoryException
+from api.repository.movie.mongo import MongoMovieRepository
 from api.settings import Settings, settings_instance
 
 router = APIRouter(prefix="/api/v1/movies", tags=["movies"])
+
 
 
 @lru_cache()
@@ -29,6 +35,7 @@ def movie_repository(settings: Settings = Depends(settings_instance)):
         connection_string=settings.mongo_connection_string,
         database=settings.mongo_database_name,
     )
+
 
 
 @router.post("/", status_code=201, response_model=MovieCreatedResponse)
@@ -53,6 +60,7 @@ async def post_create_movie(
     return MovieCreatedResponse(id=movie_id)
 
 
+
 @router.get(
     "/{movie_id}",
     responses={200: {"model": MovieResponse}, 404: {"model": DetailResponse}},
@@ -73,9 +81,8 @@ async def get_movie_by_id(
     )
 
 
+
 @router.get("/", response_model=typing.List[MovieResponse])
-
-
 async def get_movies_by_title(
     title: str = Query(
         ..., title="Title", description="Title of the movie to search for", min_length=3
@@ -98,7 +105,37 @@ async def get_movies_by_title(
         )
     return movies_return_value
 
-@router.patch("/{movie_id}", response_model=MovieResponse)
-async def patch_movie():
-    """ Updates a movie"""
-    pass
+
+
+@router.patch(
+    "/{movie_id}",
+    responses={200: {"model": DetailResponse}, 400: {"model": DetailResponse}},
+)
+async def patch_movie(
+    movie_id: str = Path(
+        ..., title="Movie ID", description="The ID of the movie to update"
+    ),
+    update_parameteres: MovieUpdateBody = Body(
+        ..., title="Update body", description="The parameters to update for the movie."
+    ),
+    repo: MovieRepository = Depends(movie_repository),
+):
+    """Updates a movie with the provided parameters."""
+    try:
+        update_dict = update_parameteres.dict(exclude_unset=True, exclude_none=True)
+        await repo.update(movie_id=movie_id, update_parameteres=update_dict)
+    except RepositoryException as e:
+        return DetailResponse(message=str(e))
+
+
+
+@router.delete("/{movie_id}", status_code=204)
+async def delete_movie(
+    movie_id: str = Path(
+        ..., title="Movie ID", description="The ID of the movie to update"
+    ),
+    repo: MovieRepository = Depends(movie_repository),
+):
+    """Deletes a movie with the provided ID."""
+    await repo.delete(movie_id=movie_id)
+    return Response(status_code=204)

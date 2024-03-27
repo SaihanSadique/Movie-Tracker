@@ -1,6 +1,7 @@
 """This module contains the demo endpoint."""
 
 from fastapi import APIRouter
+
 from api.dto.detail import DetailResponse
 
 router = APIRouter(prefix="/api/v1/demo")

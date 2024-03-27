@@ -3,7 +3,6 @@
 # pylint: disable=unused-import , redefined-outer-name
 import pytest
 
-
 from api._test.repository.fixture import mongo_movie_repo_fixture
 from api.entities.movies import Movie
 from api.repository.movie.abstractions import RepositoryException

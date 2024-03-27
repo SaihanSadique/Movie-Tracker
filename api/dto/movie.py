@@ -2,6 +2,8 @@
 
 # pylint: disable=no-self-argument
 
+import typing
+
 from pydantic import BaseModel, validator
 
 
@@ -48,3 +50,12 @@ class MovieResponse(MovieCreatedResponse):
     description: str
     release_year: int
     watched: bool
+
+
+class MovieUpdateBody(BaseModel):
+    """DTO for updating a movie."""
+
+    title: typing.Optional[str] = None
+    description: typing.Optional[str] = None
+    release_year: typing.Optional[int] = None
+    watched: typing.Optional[bool] = None

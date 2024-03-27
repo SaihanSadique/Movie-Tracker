@@ -2,8 +2,8 @@
 
 import asyncio
 import secrets
-import pytest
 
+import pytest
 
 from api.repository.movie.mongo import MongoMovieRepository
 
