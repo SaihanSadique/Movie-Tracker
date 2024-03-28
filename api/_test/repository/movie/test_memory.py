@@ -1,8 +1,10 @@
 """
 This file contains the tests for the movie repository.
 """
-
+# pylint: disable=unused-import , redefined-outer-name
 import pytest
+
+from api._test.repository.fixture import memory_movie_repo_fixture
 
 from api.entities.movies import Movie
 from api.repository.movie.abstractions import RepositoryException
@@ -126,6 +128,98 @@ async def test_get_by_title(movies_seed, movie_title, expected_results):
     result = await repo.get_by_title(title=movie_title)
     assert result == expected_results
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "skip,limit,expected_results",
+    [
+        pytest.param(
+            0,
+            0,
+            [
+                Movie(
+                    movie_id="my-id",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= False,
+                ),
+                Movie(
+                    movie_id="my-id-2",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= False,
+                ),
+                Movie(
+                    movie_id="my-id-3",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= False,
+                ),
+            ],
+        ),
+        pytest.param(
+            0,
+            1,
+            [
+                Movie(
+                    movie_id="my-id",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= False,
+                )
+            ],
+        ),
+        pytest.param(
+            1,
+            1,
+            [
+                Movie(
+                    movie_id="my-id-2",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= False,
+                )
+            ],
+        ),
+    ],
+)
+async def test_get_by_title_pagination(
+    memory_movie_repo_fixture, skip, limit, expected_results
+):
+    """Test the retrieval of a movie by its title with pagination."""
+    movie_seed = [
+        Movie(
+            movie_id="my-id",
+            title="My Movie",
+            description="My description",
+            release_year=1990,
+            watched= False,
+        ),
+        Movie(
+            movie_id="my-id-2",
+            title="My Movie",
+            description="My description",
+            release_year=1990,
+            watched= False,
+        ),
+        Movie(
+            movie_id="my-id-3",
+            title="My Movie",
+            description="My description",
+            release_year=1990,
+            watched= False,
+        ),
+    ]
+    for movie in movie_seed:
+        await memory_movie_repo_fixture.create(movie)
+    results = await memory_movie_repo_fixture.get_by_title(
+        title="My Movie", skip=skip, limit=limit
+    )
+    assert results == expected_results
 
 # @pytest.mark.asyncio()
 # @pytest.mark.parametrize(

@@ -22,11 +22,17 @@ class MemoryMovieRepository(MovieRepository):
     async def get_by_id(self, movie_id: str) -> typing.Optional[Movie]:
         return self._storage.get(movie_id)
 
-    # async def get_by_title(self, title: str) -> typing.List[Movie]:
+    # async def get_by_title(
+    #     self, title: str, skip: int = 0, limit: int = 1000
+    # ) -> typing.List[Movie]:
     #     return_value = []
     #     for _, value in self._storage.items():
-    #         if value.title == title:
+    #         if title == value.title:
     #             return_value.append(value)
+    #     if limit == 0:
+    #         return return_value[skip:]
+    #     return return_value[skip : skip + limit]
+
     async def get_by_title(
         self, title: str, skip: int = 0, limit: int = 1000
     ) -> typing.List[Movie]:

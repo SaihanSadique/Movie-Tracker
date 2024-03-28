@@ -5,6 +5,7 @@ import secrets
 
 import pytest
 
+from api.repository.movie.memory import MemoryMovieRepository
 from api.repository.movie.mongo import MongoMovieRepository
 
 
@@ -33,3 +34,9 @@ def mongo_movie_repo_fixture():
 
     # Close the event loop after the test
     loop.close()
+
+
+@pytest.fixture()
+def memory_movie_repo_fixture():
+    """Return a MemoryMovieRepository instance."""
+    return MemoryMovieRepository()

@@ -2,6 +2,7 @@
 This file contains the FastAPI router for the movie API. version 1.
 """
 
+from collections import namedtuple
 import typing
 import uuid
 from functools import lru_cache
@@ -24,7 +25,6 @@ from api.settings import Settings, settings_instance
 router = APIRouter(prefix="/api/v1/movies", tags=["movies"])
 
 
-
 @lru_cache()
 def movie_repository(settings: Settings = Depends(settings_instance)):
     """Creates a new instance of the movie repository.
@@ -36,6 +36,19 @@ def movie_repository(settings: Settings = Depends(settings_instance)):
         database=settings.mongo_database_name,
     )
 
+
+def pagination_params(
+    skip: int = Query(0, title="Skip", description="The number of items to skip", ge=0),
+    limit: int = Query(
+        1000,
+        title="Limit",
+        description="The limit of the number of items returned",
+        le=1000,
+    ),
+):
+    """Returns a named tuple with the pagination parameters."""
+    Pagination = namedtuple("Pagination", ["skip", "limit"])
+    return Pagination(skip=skip, limit=limit)
 
 
 @router.post("/", status_code=201, response_model=MovieCreatedResponse)
@@ -60,7 +73,6 @@ async def post_create_movie(
     return MovieCreatedResponse(id=movie_id)
 
 
-
 @router.get(
     "/{movie_id}",
     responses={200: {"model": MovieResponse}, 404: {"model": DetailResponse}},
@@ -81,17 +93,17 @@ async def get_movie_by_id(
     )
 
 
-
 @router.get("/", response_model=typing.List[MovieResponse])
 async def get_movies_by_title(
     title: str = Query(
         ..., title="Title", description="Title of the movie to search for", min_length=3
     ),
+    pagination: namedtuple = Depends(pagination_params),
     repo: MovieRepository = Depends(movie_repository),
 ):
     """Returns a list of movies that match the title provided.
     If no movies are found, an empty list is returned."""
-    movies = await repo.get_by_title(title)
+    movies = await repo.get_by_title(title, skip=pagination.skip, limit=pagination.limit)
     movies_return_value = []
     for movie in movies:
         movies_return_value.append(
@@ -104,7 +116,6 @@ async def get_movies_by_title(
             )
         )
     return movies_return_value
-
 
 
 @router.patch(
@@ -126,7 +137,6 @@ async def patch_movie(
         await repo.update(movie_id=movie_id, update_parameteres=update_dict)
     except RepositoryException as e:
         return DetailResponse(message=str(e))
-
 
 
 @router.delete("/{movie_id}", status_code=204)

@@ -139,7 +139,98 @@ async def test_get_by_title(
     movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
     assert movies == expected_movies
 
-
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "skip,limit,expected_results",
+    [
+        pytest.param(
+            0,
+            0,
+            [
+                Movie(
+                    movie_id="my-id",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= True
+                ),
+                Movie(
+                    movie_id="my-id-2",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= True
+                ),
+                Movie(
+                    movie_id="my-id-3",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= True
+                ),
+            ],
+        ),
+        pytest.param(
+            0,
+            1,
+            [
+                Movie(
+                    movie_id="my-id",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= True
+                )
+            ],
+        ),
+        pytest.param(
+            1,
+            1,
+            [
+                Movie(
+                    movie_id="my-id-2",
+                    title="My Movie",
+                    description="My description",
+                    release_year=1990,
+                    watched= True
+                )
+            ],
+        ),
+    ],
+)
+async def test_get_by_title_pagination(
+    mongo_movie_repo_fixture, skip, limit, expected_results
+):
+    """Test getting movies by title from the repository with pagination."""
+    movie_seed = [
+        Movie(
+            movie_id="my-id",
+            title="My Movie",
+            description="My description",
+            release_year=1990,
+            watched= True
+        ),
+        Movie(
+            movie_id="my-id-2",
+            title="My Movie",
+            description="My description",
+            release_year=1990,
+            watched= True
+        ),
+        Movie(
+            movie_id="my-id-3",
+            title="My Movie",
+            description="My description",
+            release_year=1990,
+            watched= True
+        ),
+    ]
+    for movie in movie_seed:
+        await mongo_movie_repo_fixture.create(movie)
+    results = await mongo_movie_repo_fixture.get_by_title(
+        title="My Movie", skip=skip, limit=limit
+    )
+    assert results == expected_results
 # @pytest.mark.parametrize(
 #     "initial_movies, searched_title, expected_movies",
 #     [
