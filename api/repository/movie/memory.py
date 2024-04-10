@@ -5,7 +5,8 @@ This module contains the implementation of the MovieRepository interface using a
 import typing
 
 from api.entities.movies import Movie
-from api.repository.movie.abstractions import MovieRepository, RepositoryException
+from api.repository.movie.abstractions import (MovieRepository,
+                                               RepositoryException)
 
 
 class MemoryMovieRepository(MovieRepository):

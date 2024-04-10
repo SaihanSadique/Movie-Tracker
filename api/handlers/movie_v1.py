@@ -2,23 +2,20 @@
 This file contains the FastAPI router for the movie API. version 1.
 """
 
-from collections import namedtuple
 import typing
 import uuid
+from collections import namedtuple
 from functools import lru_cache
 
 from fastapi import APIRouter, Body, Depends, Path, Query
 from starlette.responses import Response
 
 from api.dto.detail import DetailResponse
-from api.dto.movie import (
-    CreateMovieBody,
-    MovieCreatedResponse,
-    MovieResponse,
-    MovieUpdateBody,
-)
+from api.dto.movie import (CreateMovieBody, MovieCreatedResponse,
+                           MovieResponse, MovieUpdateBody)
 from api.entities.movies import Movie
-from api.repository.movie.abstractions import MovieRepository, RepositoryException
+from api.repository.movie.abstractions import (MovieRepository,
+                                               RepositoryException)
 from api.repository.movie.mongo import MongoMovieRepository
 from api.settings import Settings, settings_instance
 
@@ -103,7 +100,9 @@ async def get_movies_by_title(
 ):
     """Returns a list of movies that match the title provided.
     If no movies are found, an empty list is returned."""
-    movies = await repo.get_by_title(title, skip=pagination.skip, limit=pagination.limit)
+    movies = await repo.get_by_title(
+        title, skip=pagination.skip, limit=pagination.limit
+    )
     movies_return_value = []
     for movie in movies:
         movies_return_value.append(

@@ -139,6 +139,7 @@ async def test_get_by_title(
     movies = await mongo_movie_repo_fixture.get_by_title(title=searched_title)
     assert movies == expected_movies
 
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "skip,limit,expected_results",
@@ -152,21 +153,21 @@ async def test_get_by_title(
                     title="My Movie",
                     description="My description",
                     release_year=1990,
-                    watched= True
+                    watched=True,
                 ),
                 Movie(
                     movie_id="my-id-2",
                     title="My Movie",
                     description="My description",
                     release_year=1990,
-                    watched= True
+                    watched=True,
                 ),
                 Movie(
                     movie_id="my-id-3",
                     title="My Movie",
                     description="My description",
                     release_year=1990,
-                    watched= True
+                    watched=True,
                 ),
             ],
         ),
@@ -179,7 +180,7 @@ async def test_get_by_title(
                     title="My Movie",
                     description="My description",
                     release_year=1990,
-                    watched= True
+                    watched=True,
                 )
             ],
         ),
@@ -192,7 +193,7 @@ async def test_get_by_title(
                     title="My Movie",
                     description="My description",
                     release_year=1990,
-                    watched= True
+                    watched=True,
                 )
             ],
         ),
@@ -208,21 +209,21 @@ async def test_get_by_title_pagination(
             title="My Movie",
             description="My description",
             release_year=1990,
-            watched= True
+            watched=True,
         ),
         Movie(
             movie_id="my-id-2",
             title="My Movie",
             description="My description",
             release_year=1990,
-            watched= True
+            watched=True,
         ),
         Movie(
             movie_id="my-id-3",
             title="My Movie",
             description="My description",
             release_year=1990,
-            watched= True
+            watched=True,
         ),
     ]
     for movie in movie_seed:
@@ -231,6 +232,8 @@ async def test_get_by_title_pagination(
         title="My Movie", skip=skip, limit=limit
     )
     assert results == expected_results
+
+
 # @pytest.mark.parametrize(
 #     "initial_movies, searched_title, expected_movies",
 #     [
