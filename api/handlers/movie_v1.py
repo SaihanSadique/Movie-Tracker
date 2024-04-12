@@ -147,7 +147,7 @@ async def patch_movie(
         return DetailResponse(message="Movie updated")
     except RepositoryException as e:
         return JSONResponse(
-            status_code= 400, content=jsonable_encoder(DetailResponse(message=str(e)))
+            status_code=400, content=jsonable_encoder(DetailResponse(message=str(e)))
         )
 
 

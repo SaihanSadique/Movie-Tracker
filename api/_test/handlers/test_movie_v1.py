@@ -323,7 +323,8 @@ async def test_get_movies_by_title(
     [
         (
             {
-                "title": "My Title Update", "id": "new test id",
+                "title": "My Title Update",
+                "id": "new test id",
             },
             Movie(
                 movie_id="top_movie",
@@ -332,11 +333,11 @@ async def test_get_movies_by_title(
                 release_year=1994,
                 watched=True,
             ),
-
         ),
         (
             {
-                "description": "My Desc Update", "random": "Test",
+                "description": "My Desc Update",
+                "random": "Test",
             },
             Movie(
                 movie_id="top_movie",
@@ -345,7 +346,6 @@ async def test_get_movies_by_title(
                 release_year=1994,
                 watched=True,
             ),
-
         ),
         (
             {
@@ -358,7 +358,6 @@ async def test_get_movies_by_title(
                 release_year=3000,
                 watched=True,
             ),
-
         ),
         (
             {
@@ -371,7 +370,6 @@ async def test_get_movies_by_title(
                 release_year=1994,
                 watched=False,
             ),
-
         ),
     ],
 )
@@ -418,4 +416,28 @@ async def test_patch_update_movie_fail(test_client_fixture):
     )
     assert result.status_code == 400
     assert result.json() == {"message": "Movie top_movie not found"}
-    
+
+
+@pytest.mark.asyncio()
+async def test_delete_movie(test_client_fixture):
+    """Test deleting a movie using the Delete endpoint."""
+    # Setup
+    repo = MemoryMovieRepository()
+    patched_dependency = functools.partial(memory_repository_dependency, repo)
+    test_client_fixture.app.dependency_overrides[movie_repository] = patched_dependency
+
+    await repo.create(
+        Movie(
+            movie_id="top_movie",
+            title="Needs Update",
+            description="Needs update",
+            release_year=1994,
+            watched=True,
+        )
+    )
+
+    # Test
+    result = test_client_fixture.delete("/api/v1/movies/top_movie")
+
+    assert result.status_code == 204
+    assert await repo.get_by_id(movie_id="top_movie") is None
