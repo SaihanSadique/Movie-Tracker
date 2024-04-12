@@ -2,6 +2,7 @@
 This file contains the FastAPI router for the movie API. version 1.
 """
 
+from http.client import HTTPException
 import typing
 import uuid
 from collections import namedtuple
@@ -10,7 +11,9 @@ from functools import lru_cache
 from fastapi import APIRouter, Body, Depends, Path, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import Response
+from starlette import status
 
 from api.dto.detail import DetailResponse
 from api.dto.movie import (
@@ -24,7 +27,23 @@ from api.repository.movie.abstractions import MovieRepository, RepositoryExcepti
 from api.repository.movie.mongo import MongoMovieRepository
 from api.settings import Settings, settings_instance
 
-router = APIRouter(prefix="/api/v1/movies", tags=["movies"])
+http_basic = HTTPBasic()
+
+
+def basic_authentication(credentials: HTTPBasicCredentials = Depends(http_basic)):
+    """Basic auth for the API. Only allows access to API if the credentials are correct."""
+    if credentials.username == "Bruce" and credentials.password == "Wayne":
+        return
+    # 401 - invalid credentials, authentication failure
+    # 403 - forbidden, authorization failure
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORISED, detail="Unauthorized")
+
+
+router = APIRouter(
+    prefix="/api/v1/movies",
+    tags=["movies"],
+    dependencies=[Depends(basic_authentication)],
+)
 
 
 @lru_cache()
@@ -80,7 +99,8 @@ async def post_create_movie(
     responses={200: {"model": MovieResponse}, 404: {"model": DetailResponse}},
 )
 async def get_movie_by_id(
-    movie_id: str, repo: MovieRepository = Depends(movie_repository)
+    movie_id: str,
+    repo: MovieRepository = Depends(movie_repository),
 ):
     """Returns a movie if found, otherwise returns a 404 response."""
     movie = await repo.get_by_id(movie_id=movie_id)

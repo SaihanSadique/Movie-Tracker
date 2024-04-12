@@ -16,7 +16,7 @@ def create_app():
 
     app = FastAPI(docs_url="/")
 
-    #middleware
+    # middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -25,8 +25,6 @@ def create_app():
         allow_headers=["*"],
     )
     Instrumentator().instrument(app).expose(app)
-
-
 
     # app.include_router(demo.router)
     app.include_router(movie_v1.router)
