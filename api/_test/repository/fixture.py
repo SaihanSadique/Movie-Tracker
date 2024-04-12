@@ -10,10 +10,12 @@ from api.api import create_app
 from api.repository.movie.memory import MemoryMovieRepository
 from api.repository.movie.mongo import MongoMovieRepository
 
+
 @pytest.fixture
 def test_client_fixture():
     """Return a TestClient instance."""
     return TestClient(app=create_app())
+
 
 @pytest.fixture
 def mongo_movie_repo_fixture():

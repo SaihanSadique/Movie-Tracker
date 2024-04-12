@@ -8,14 +8,19 @@ from collections import namedtuple
 from functools import lru_cache
 
 from fastapi import APIRouter, Body, Depends, Path, Query
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from starlette.responses import Response
 
 from api.dto.detail import DetailResponse
-from api.dto.movie import (CreateMovieBody, MovieCreatedResponse,
-                           MovieResponse, MovieUpdateBody)
+from api.dto.movie import (
+    CreateMovieBody,
+    MovieCreatedResponse,
+    MovieResponse,
+    MovieUpdateBody,
+)
 from api.entities.movies import Movie
-from api.repository.movie.abstractions import (MovieRepository,
-                                               RepositoryException)
+from api.repository.movie.abstractions import MovieRepository, RepositoryException
 from api.repository.movie.mongo import MongoMovieRepository
 from api.settings import Settings, settings_instance
 
@@ -80,7 +85,12 @@ async def get_movie_by_id(
     """Returns a movie if found, otherwise returns a 404 response."""
     movie = await repo.get_by_id(movie_id=movie_id)
     if movie is None:
-        return DetailResponse(message=f"Movie  with id {movie_id} is not found")
+        return JSONResponse(
+            status_code=404,
+            content=jsonable_encoder(
+                DetailResponse(message=f"Movie with ID {movie_id} not found")
+            ),
+        )
     return MovieResponse(
         id=movie.id,
         title=movie.title,
@@ -134,8 +144,11 @@ async def patch_movie(
     try:
         update_dict = update_parameteres.dict(exclude_unset=True, exclude_none=True)
         await repo.update(movie_id=movie_id, update_parameteres=update_dict)
+        return DetailResponse(message="Movie updated")
     except RepositoryException as e:
-        return DetailResponse(message=str(e))
+        return JSONResponse(
+            status_code= 400, content=jsonable_encoder(DetailResponse(message=str(e)))
+        )
 
 
 @router.delete("/{movie_id}", status_code=204)
