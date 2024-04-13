@@ -5,3 +5,4 @@ motor==3.3.2
 pydantic-settings == 2.2.1
 prometheus-fastapi-instrumentator==7.0.0
 prometheus_client==0.20.0
+python-jose==3.3.0
